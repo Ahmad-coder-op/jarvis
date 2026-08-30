@@ -1,0 +1,16 @@
+{
+  "name": "Jarvis Pro AI",
+  "short_name": "Jarvis Pro",
+  "description": "Jarvis Pro AI is a personal AI assistant by Ahmad Nisar with text chat, voice input, and voice output.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06100F",
+  "theme_color": "#06100F",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
