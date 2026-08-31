@@ -16,7 +16,7 @@ const copy = {
     error: "I couldn't reach the AI service. Please try again in a moment.",
     suggestions: ["Plan my day", "Explain something simply", "Write a professional message"],
     createdBy: "Created by",
-    online: "GROQ AI",
+    online: "AI ONLINE",
     web: "WEB",
     webOn: "Web search on",
     webOff: "Web search off",
@@ -37,7 +37,7 @@ const copy = {
     error: "AI سروس سے رابطہ نہیں ہو سکا۔ چند لمحوں بعد دوبارہ کوشش کریں۔",
     suggestions: ["میرا دن پلان کریں", "کسی چیز کو آسان الفاظ میں سمجھائیں", "پروفیشنل پیغام لکھیں"],
     createdBy: "تیار کردہ",
-    online: "GROQ AI",
+    online: "AI آن لائن",
     web: "ویب",
     webOn: "ویب سرچ آن",
     webOff: "ویب سرچ آف",
@@ -45,7 +45,8 @@ const copy = {
   },
 };
 
-const STORAGE_KEY = "jarvis-groq-messages";
+const STORAGE_KEY = "jarvis-messages";
+const LEGACY_STORAGE_KEY = "jarvis-groq-messages";
 const CHAT_ENDPOINT = "/.netlify/functions/chat";
 
 function Icon({ name, size = 20 }) {
@@ -82,7 +83,12 @@ function App() {
   const [language, setLanguage] = useState("en");
   const [theme, setTheme] = useState(() => localStorage.getItem("jarvis-theme") || "dark");
   const [messages, setMessages] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; }
+    try {
+      const storedMessages = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
+      return JSON.parse(storedMessages || "[]");
+    } catch {
+      return [];
+    }
   });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -104,6 +110,7 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-50)));
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
   }, [messages]);
 
   useEffect(() => {
@@ -114,7 +121,7 @@ function App() {
   useEffect(() => () => clearInterval(typewriterRef.current), []);
 
   // Reveals the reply gradually instead of popping in all at once, since
-  // the Groq function below returns the full answer in one response rather
+  // the AI function below returns the full answer in one response rather
   // than a token stream. Purely cosmetic — the assistant message already
   // holds the full text; this just controls how much of it is shown.
   const revealText = (fullText, assistantIndex) => {
@@ -362,7 +369,7 @@ function App() {
       </footer>
 
       <div className="creator-badge"><span>{text.createdBy}</span><strong>AHMAD NISAR</strong></div>
-      <a className="puter-footer" href="https://groq.com" target="_blank" rel="noreferrer">Powered by Groq</a>
+      <a className="puter-footer" href="https://www.netlify.com/products/ai/" target="_blank" rel="noreferrer">Powered by Netlify AI</a>
     </main>
   );
 }
