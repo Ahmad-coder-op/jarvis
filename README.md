@@ -1,28 +1,20 @@
-# JARVIS Pro AI — Groq Edition
+# JARVIS Pro AI
 
-A polished React AI chat app powered by **Groq's free AI API** through a
-Netlify serverless function. The Jarvis visual identity, animated orb,
+A polished React AI chat app powered by **Netlify AI Gateway** through a
+Netlify Function. The Jarvis visual identity, animated orb,
 background grid, voice controls, Urdu/English switch, copy/read-aloud tools,
 and responsive layout are all preserved.
 
-## What changed from the Puter.js version
+## Chat architecture
 
-- Removed the Puter.js browser SDK entirely — no more visitor sign-in popups.
-- Added `netlify/functions/chat.js`, a serverless function that calls Groq's
-  `chat/completions` API using a secret API key stored in an environment
-  variable. Visitors never see or need an API key.
-- The frontend now calls `/.netlify/functions/chat` instead of `puter.ai.chat()`.
-- Defaults to `openai/gpt-oss-120b` (Groq's flagship open model). Toggling
-  "Web search" in the UI switches to `groq/compound`, which can browse the
-  web on its own.
+- `netlify/functions/chat.mjs` runs on Netlify's modern Functions runtime and
+  calls OpenAI through Netlify AI Gateway.
+- The frontend calls `/.netlify/functions/chat`; credentials remain on the
+  server and are injected automatically by Netlify.
+- Toggling "Web search" enables the model's web search tool.
 - Since this uses a simple request/response call (not a token stream), the
   reply is revealed with a lightweight typewriter effect on the client so it
   still feels alive.
-
-## One-time setup: get a free Groq API key
-
-1. Go to <https://console.groq.com/keys> and sign up (no credit card needed).
-2. Create an API key and copy it.
 
 ## Netlify deployment
 
@@ -31,15 +23,8 @@ Build settings:
 - Publish directory: `dist`
 - Functions directory: `netlify/functions` (already set in `netlify.toml`)
 
-**Required environment variable** — in the Netlify dashboard, go to:
-`Site configuration -> Environment variables -> Add a variable`
-
-| Key            | Value                          |
-| -------------- | ------------------------------ |
-| `GROQ_API_KEY` | your key from console.groq.com |
-
-After adding the variable, trigger a new deploy (env vars only take effect on
-the next build). Then visit your site — no sign-in, no popups, it just works.
+No provider API key is required. Netlify AI Gateway injects server-side
+credentials automatically on supported credit-based plans.
 
 ## Local development
 
@@ -47,12 +32,10 @@ the next build). Then visit your site — no sign-in, no popups, it just works.
 npm install
 ```
 
-The chat function needs an environment variable, so use the Netlify CLI
-instead of plain Vite for local testing:
+Use the Netlify CLI instead of plain Vite for local testing so the frontend
+and function run together:
 
 ```bash
-npm install -g netlify-cli   # one-time
-cp .env.example .env         # then paste your GROQ_API_KEY into .env
 netlify dev
 ```
 
@@ -64,6 +47,4 @@ functions.
 ## Files of interest
 
 - `src/App.jsx` — chat UI and logic; calls `/.netlify/functions/chat`.
-- `netlify/functions/chat.js` — the serverless proxy that talks to Groq and
-  keeps `GROQ_API_KEY` secret.
-- `.env.example` — template for local development.
+- `netlify/functions/chat.mjs` — the serverless AI Gateway function.
